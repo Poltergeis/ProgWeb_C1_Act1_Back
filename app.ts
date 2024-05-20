@@ -4,9 +4,10 @@ import http from "http"
 import morgan from "morgan"
 import dotenv from "dotenv"
 import signale from "signale"
-import { WebSocketServer } from "ws"
-import { CustomSocket,EventAttributes } from "./types/socketTypes"
-import { v4 as uuid } from "uuid"
+import { WebSocketServer, WebSocket } from "ws"
+import { EventAttributes } from "./types/socketTypes"
+import puntajesModel from "./models/puntajesModel"
+import { IPuntaje } from "./types/IPuntajes"
 
 dotenv.config()
 
@@ -25,16 +26,37 @@ const server = http.createServer(app);
 
 const wss = new WebSocketServer({ server: server });
 
-wss.on('connection', function (socket:CustomSocket) {
-    
-    socket.id = uuid();
-    console.log(`nuevo usuario conectado con el id: ${socket.id}`)
+wss.on('connection', function (socket:WebSocket) {
 
-    socket.onmessage = (event) => {
+    socket.onmessage = async(event) => {
         const data = event.data;
         const parsedData: EventAttributes = JSON.parse(data.toString());
         const action = parsedData.action;
         const body = parsedData.body;
+
+        switch (action) {
+            case "getPuntajes":
+                let puntajeAdelante: IPuntaje, puntajeAtras: IPuntaje, indexNext: number
+                const puntajes = await puntajesModel.find() as IPuntaje[];
+                for (let i = 0; i < puntajes.length; i++){
+                    indexNext = (i + 1) <= puntajes.length ? (i + 1) : i;
+                    if (puntajes[i].puntaje > puntajes[indexNext].puntaje) {
+                        indexNext = indexNext - 1;
+                        while (puntajes[indexNext].puntaje > puntajes[indexNext + 1].puntaje && indexNext > 0) {
+                            puntajeAdelante = puntajes[indexNext];
+                            puntajeAtras = puntajes[indexNext + 1];
+                            puntajes[indexNext] = puntajeAtras;
+                            puntajes[indexNext + 1] = puntajeAdelante;
+                            indexNext = indexNext - 1;
+                        }
+                    }
+                }
+                socket.send(JSON.stringify({
+                    key: "puntajes",
+                    data: puntajes
+                }));
+                break;
+        }
     }
 
 })

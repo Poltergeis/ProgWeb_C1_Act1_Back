@@ -1,8 +1,8 @@
 import { WebSocket } from "ws"
 
-export interface CustomSocket extends WebSocket{
+/*export interface CustomSocket extends WebSocket{
     id: string
-}
+}*/
 
 export interface EventAttributes {
     action: string,
