@@ -47,7 +47,7 @@ wss.on('connection', function (socket:WebSocket) {
                 const puntajes = await puntajesModel.find() as IPuntaje[];
                 for (let i = 0; i < puntajes.length; i++){
                     indexNext = (i + 1) <= puntajes.length ? (i + 1) : i;
-                    if (puntajes[i].puntaje > puntajes[indexNext].puntaje) {
+                    if (puntajes[i].puntaje > puntajes[indexNext].puntaje && indexNext !== i) {
                         indexNext = indexNext - 1;
                         while (puntajes[indexNext].puntaje > puntajes[indexNext + 1].puntaje && indexNext > 0) {
                             puntajeAdelante = puntajes[indexNext];
