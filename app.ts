@@ -8,6 +8,9 @@ import { WebSocketServer, WebSocket } from "ws"
 import { EventAttributes } from "./types/socketTypes"
 import puntajesModel from "./models/puntajesModel"
 import { IPuntaje } from "./types/IPuntajes"
+import { publicacionesRouter } from "./routes/publicacionesRouter"
+import { puntajeRouter } from "./routes/puntajeRouter"
+import { usuarioRouter } from "./routes/usuarioRouter"
 
 dotenv.config()
 
@@ -21,6 +24,10 @@ const app = express()
 app.use(express.json())
 app.use(cors(corsOptions));
 app.use(morgan("dev"));
+
+app.use('/publicaciones', publicacionesRouter);
+app.use('/puntaje', puntajeRouter);
+app.use('/usuario', usuarioRouter);
 
 const server = http.createServer(app);
 
