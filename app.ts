@@ -75,11 +75,9 @@ wss.on('connection', function (socket: WebSocket) {
                 break;
             
             case "postPuntaje":
-                const name = body.name;
-                const value = body.value;
                 const nuevoPuntaje = new puntajesModel({
-                    nombre: name,
-                    puntaje: value
+                    nombre: body.name,
+                    puntaje: body.value
                 });
                 await nuevoPuntaje.save();
                 socket.send(JSON.stringify({
