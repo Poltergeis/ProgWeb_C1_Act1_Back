@@ -9,7 +9,6 @@ import { EventAttributes } from "./types/socketTypes"
 import puntajesModel from "./models/puntajesModel"
 import { IPuntaje } from "./types/IPuntajes"
 import { publicacionesRouter } from "./routes/publicacionesRouter"
-import { puntajeRouter } from "./routes/puntajeRouter"
 import { usuarioRouter } from "./routes/usuarioRouter"
 import { agendaRouter } from "./routes/agendaRouter"
 
@@ -27,7 +26,6 @@ app.use(cors(corsOptions));
 app.use(morgan("dev"));
 
 app.use('/publicaciones', publicacionesRouter);
-app.use('/puntaje', puntajeRouter);
 app.use('/usuario', usuarioRouter);
 app.use('/agenda', agendaRouter);
 
@@ -52,7 +50,6 @@ wss.on('connection', function (socket: WebSocket) {
         switch (action) {
             case "getPuntajes":
                 console.log("evento iniciado")//comentario
-                let puntajeAdelante: IPuntaje, puntajeAtras: IPuntaje, indexNext: number
                 let puntajes:IPuntaje[] = await puntajesModel.find();
                 console.log("puntajes obtenidos de la database")//comentario
                 if (!puntajes) {
@@ -75,6 +72,20 @@ wss.on('connection', function (socket: WebSocket) {
             
             case "test":
                 console.log(`los sockets funcionan correctamente: ${action}`);
+                break;
+            
+            case "postPuntaje":
+                const name = body.name;
+                const value = body.value;
+                const nuevoPuntaje = new puntajesModel({
+                    nombre: name,
+                    puntaje: value
+                });
+                await nuevoPuntaje.save();
+                socket.send(JSON.stringify({
+                    key: "newPuntaje",
+                    data: nuevoPuntaje
+                }));
                 break;
         }
     }

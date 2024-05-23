@@ -1,4 +1,5 @@
 import { WebSocket } from "ws"
+import { IPuntaje } from "./IPuntajes"
 
 /*export interface CustomSocket extends WebSocket{
     id: string
@@ -9,6 +10,7 @@ export interface EventAttributes {
     body: {
         message: string,
         value: number,
-        id: string
+        id: string,
+        name: string
     }
 }
