@@ -51,7 +51,7 @@ wss.on('connection', function (socket: WebSocket) {
             case "getPuntajes":
                 let puntajeAdelante: IPuntaje, puntajeAtras: IPuntaje, indexNext: number
                 const puntajes = await puntajesModel.find() as IPuntaje[];
-                if (!puntajes[0]) {
+                if (!puntajes) {
                     socket.send(JSON.stringify({
                         key: "puntajes",
                         data: ["no hay puntajes"]
