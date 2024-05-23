@@ -35,6 +35,10 @@ const wss = new WebSocketServer({ server: server });
 
 wss.on('connection', function (socket: WebSocket) {
     console.log("nueva conexion");
+
+    socket.on('error', function (error: Error) {
+        console.log('ha ocurrido un error.', error.message);
+    });
     
 
     socket.onmessage = async(event) => {
