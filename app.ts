@@ -76,7 +76,7 @@ wss.on('connection', function (socket: WebSocket) {
                     if (!puntajes) {
                         socket.send(JSON.stringify({
                             key: "puntajes",
-                            data: ["no hay puntajes"]
+                            data: ["no hay puntaje"]
                         }));
                     }
                     if (puntajes.length > 0) {
