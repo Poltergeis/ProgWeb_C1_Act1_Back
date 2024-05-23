@@ -11,6 +11,7 @@ import { IPuntaje } from "./types/IPuntajes"
 import { publicacionesRouter } from "./routes/publicacionesRouter"
 import { puntajeRouter } from "./routes/puntajeRouter"
 import { usuarioRouter } from "./routes/usuarioRouter"
+import { agendaRouter } from "./routes/agendaRouter"
 
 dotenv.config()
 
@@ -28,6 +29,7 @@ app.use(morgan("dev"));
 app.use('/publicaciones', publicacionesRouter);
 app.use('/puntaje', puntajeRouter);
 app.use('/usuario', usuarioRouter);
+app.use('/agenda', agendaRouter);
 
 const server = http.createServer(app);
 

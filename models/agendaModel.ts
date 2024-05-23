@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
+import { IAgenda } from "../types/IAgenda";
 
-const agendaSchema = new mongoose.Schema({
+const agendaSchema = new mongoose.Schema<IAgenda>({
     fecha:{
         type: mongoose.Schema.Types.String,
         required:true
