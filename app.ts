@@ -33,7 +33,9 @@ const server = http.createServer(app);
 
 const wss = new WebSocketServer({ server: server });
 
-wss.on('connection', function (socket:WebSocket) {
+wss.on('connection', function (socket: WebSocket) {
+    console.log("nueva conexion");
+    
 
     socket.onmessage = async(event) => {
         const data = event.data;
@@ -62,6 +64,10 @@ wss.on('connection', function (socket:WebSocket) {
                     key: "puntajes",
                     data: puntajes
                 }));
+                break;
+            
+            case "test":
+                console.log(`los sockets funcionan correctamente: ${action}`);
                 break;
         }
     }
