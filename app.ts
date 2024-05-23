@@ -62,7 +62,7 @@ wss.on('connection', function (socket: WebSocket) {
                 }
                 console.log("existencia de los puntajes comprobadas")//comentario
                 if (puntajes.length > 1) {
-                    puntajes = puntajes.sort((a, b) => a.puntaje - b.puntaje);
+                    puntajes = puntajes.sort((a, b) => b.puntaje - a.puntaje);
                 }
                 console.log("puntajes ordenados, punto final 2")
                 socket.send(JSON.stringify({
