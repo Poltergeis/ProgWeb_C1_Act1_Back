@@ -49,14 +49,18 @@ wss.on('connection', function (socket: WebSocket) {
 
         switch (action) {
             case "getPuntajes":
+                console.log("evento iniciado")//comentario
                 let puntajeAdelante: IPuntaje, puntajeAtras: IPuntaje, indexNext: number
                 const puntajes = await puntajesModel.find() as IPuntaje[];
+                console.log("puntajes obtenidos de la database")//comentario
                 if (!puntajes) {
+                    console.log("los puntajes no existen, punto final 1 del evento")//comentario
                     socket.send(JSON.stringify({
                         key: "puntajes",
                         data: ["no hay puntajes"]
                     }));
                 }
+                console.log("existencia de los puntajes comprobadas")//comentario
                 for (let i = 0; i < puntajes.length; i++){
                     indexNext = (i + 1) <= puntajes.length ? (i + 1) : i;
                     if (puntajes[i].puntaje > puntajes[indexNext].puntaje && indexNext !== i) {
@@ -70,6 +74,7 @@ wss.on('connection', function (socket: WebSocket) {
                         }
                     }
                 }
+                console.log("puntajes ordenados, punto final 2")
                 socket.send(JSON.stringify({
                     key: "puntajes",
                     data: puntajes
