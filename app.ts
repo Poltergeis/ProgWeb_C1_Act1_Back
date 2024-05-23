@@ -25,7 +25,7 @@ app.use(express.json())
 app.use(cors(corsOptions));
 app.use(morgan("dev"));
 
-app.use('/publicaciones', publicacionesRouter);
+app.use('/publicacion', publicacionesRouter);
 app.use('/usuario', usuarioRouter);
 app.use('/agenda', agendaRouter);
 
@@ -46,21 +46,17 @@ wss.on('connection', function (socket: WebSocket) {
         const parsedData: EventAttributes = JSON.parse(data.toString());
         const action = parsedData.action;
         const body = parsedData.body;
-
+        let puntajes:IPuntaje[] 
         switch (action) {
             case "getPuntajes":
-                console.log("evento iniciado")//comentario
-                let puntajes:IPuntaje[] = await puntajesModel.find();
-                console.log("puntajes obtenidos de la database")//comentario
+                puntajes = await puntajesModel.find();
                 if (!puntajes) {
-                    console.log("los puntajes no existen, punto final 1 del evento")//comentario
                     socket.send(JSON.stringify({
                         key: "puntajes",
                         data: ["no hay puntajes"]
                     }));
                 }
-                console.log("existencia de los puntajes comprobadas")//comentario
-                if (puntajes.length > 1) {
+                if (puntajes.length > 0) {
                     puntajes = puntajes.sort((a, b) => b.puntaje - a.puntaje);
                 }
                 console.log("puntajes ordenados, punto final 2")
@@ -69,11 +65,6 @@ wss.on('connection', function (socket: WebSocket) {
                     data: puntajes
                 }));
                 break;
-            
-            case "test":
-                console.log(`los sockets funcionan correctamente: ${action}`);
-                break;
-            
             case "postPuntaje":
                 const name = body.name;
                 const value = body.value;
@@ -82,10 +73,26 @@ wss.on('connection', function (socket: WebSocket) {
                     puntaje: value
                 });
                 await nuevoPuntaje.save();
-                socket.send(JSON.stringify({
-                    key: "newPuntaje",
-                    data: nuevoPuntaje
-                }));
+                puntajes = await puntajesModel.find();
+                wss.clients.forEach(client => {
+                    if (!puntajes) {
+                        socket.send(JSON.stringify({
+                            key: "puntajes",
+                            data: ["no hay puntajes"]
+                        }));
+                    }
+                    if (puntajes.length > 0) {
+                        puntajes = puntajes.sort((a, b) => b.puntaje - a.puntaje);
+                    }
+                    if (client.readyState == WebSocket.OPEN) {
+                        client.send(
+                            JSON.stringify({
+                                key: "newPuntaje",
+                                data: puntajes
+                            })
+                          );
+                    }
+                });
                 break;
         }
     }
