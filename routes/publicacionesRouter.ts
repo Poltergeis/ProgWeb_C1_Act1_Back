@@ -21,8 +21,14 @@ publicacionesRouter.post('/crear', async function (req, res) {
         const nuevaPublicacion = await publicacionController.guardarPublicacion(req, res);
 
         for (let cliente of peticionesPendientes) {
+            cliente.write(`event: nueva-publicacion\n`);
             cliente.write(`data: ${nuevaPublicacion}\n\n`);
         }
+
+        return res.status(201).send({
+            success: true,
+            data: nuevaPublicacion
+        });
     } catch (error: any) {
         console.log(`ERROR: ${error.message}`);
     }
