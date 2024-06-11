@@ -46,12 +46,12 @@ export class AgendaController {
             });
             await notificacion.save();
         
-            this.responderClientes(notificacion)
-        
-            return res.status(201).json({
+            res.status(201).json({
               success: true,
               message: "evento guardada",
             });
+          
+            return notificacion;
           } catch (error) {
             res.status(500).json({
               error: "Error al guardar el evento",

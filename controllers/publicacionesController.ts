@@ -1,8 +1,8 @@
 import publicacionesModel from "../models/publicacionesModel";
 import { Request,Response } from "express";
 
-
 const publicacionController = {
+  
     guardarPublicacion: async (req:Request, res:Response) => {
       try {
         const publicacion = new publicacionesModel({
@@ -12,6 +12,7 @@ const publicacionController = {
         });
         await publicacion.save();
         res.status(201).json(publicacion);
+        return publicacion;
       } catch (error:any) {
         res.status(400).json({ error: error.message });
       }

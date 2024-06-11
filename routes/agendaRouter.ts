@@ -1,8 +1,10 @@
-import { Router } from "express";
+import { Router, Response } from "express";
 import { AgendaController } from "../controllers/agendaController";
 
 const agendaController = new AgendaController();
 export const agendaRouter = Router();
+
+const peticionesPendientes: Response[] = [];
 
 agendaRouter.get('/ver', async function (req, res) {
     try {
@@ -14,7 +16,10 @@ agendaRouter.get('/ver', async function (req, res) {
 
 agendaRouter.get('/nueva-agenda', async function (req, res) {
     try {
-        await agendaController.getNuevaAgenda(res);
+        res.setHeader("Content-Type", "text/event-stream");
+        res.setHeader("Cache-Control", "no cache");
+        res.setHeader("Connection", "keep-alive");
+        peticionesPendientes.push(res);
     } catch (error) {
         console.log(`error en el enrutador. ERROR ${error}`);
     }
@@ -22,7 +27,11 @@ agendaRouter.get('/nueva-agenda', async function (req, res) {
 
 agendaRouter.post('/guardar', async function (req, res) {
     try {
-        await agendaController.guardarAgenda(req, res);
+        const nuevaNotificacion = await agendaController.guardarAgenda(req, res);
+
+        for (let cliente of peticionesPendientes) {
+            cliente.write(`data: ${nuevaNotificacion}\n\n`);
+        }
     } catch (error) {
         console.log(`error en el enrutador. ERROR: ${error}`);
     }
