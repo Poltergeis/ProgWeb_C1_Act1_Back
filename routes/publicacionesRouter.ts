@@ -16,19 +16,27 @@ publicacionesRouter.get('/visual', async function (req, res) {
     }
 })
 
+publicacionesRouter.get('', async function (req, res) {
+    try {
+        res.setHeader("Content-Type", "application/json");
+        await publicacionController.visualizaPublicaciones(req, res);
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error
+        });
+    }
+});
+
 publicacionesRouter.post('/crear', async function (req, res) {
     try {
         const nuevaPublicacion = await publicacionController.guardarPublicacion(req, res);
 
         for (let cliente of peticionesPendientes) {
-            cliente.write(`event: nueva-publicacion\n`);
-            cliente.write(`data: ${nuevaPublicacion}\n\n`);
+            cliente.write(`data: ${JSON.stringify(nuevaPublicacion)}\n\n`);
         }
 
-        return res.status(201).send({
-            success: true,
-            data: nuevaPublicacion
-        });
+        return res.status(201).send(nuevaPublicacion);
     } catch (error: any) {
         console.log(`ERROR: ${error.message}`);
     }

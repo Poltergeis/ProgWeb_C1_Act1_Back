@@ -1,7 +1,7 @@
 import usuariosModel from "../models/usuarioModel";
 import { Request, Response } from "express";
-import * as bcrypt from "bcrypt";
-import * as jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import crypto from "crypto";
 
 const secretKey = crypto.randomBytes(64).toString("hex");
@@ -9,11 +9,11 @@ const secretKey = crypto.randomBytes(64).toString("hex");
 const usuarioController = {
   agregarUsuario: async (req: Request, res: Response) => {
     try {
-      const contraEncryp = await bcrypt.hash(req.body.contrasena, 10);
+      const contra = req.body.contranena;//const contraEncryp = await bcrypt.hash(req.body.contrasena, 10);
       const usuarios = new usuariosModel({
         nombre: req.body.nombre,
         correo: req.body.correo,
-        contrasena: contraEncryp,
+        contrasena: contra,//contraEncryp,
       });
 
       await usuarios.save();
@@ -55,7 +55,7 @@ const usuarioController = {
           .json({ error: "Usuario o contraseña incorrectos" });
       }
 
-      const isMatch = await bcrypt.compare(contrasena, usuario.contrasena);
+      const isMatch = usuario.contrasena === contrasena;//await bcrypt.compare(contrasena, usuario.contrasena);
 
       if (!isMatch) {
         return res

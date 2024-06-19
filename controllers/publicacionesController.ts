@@ -11,7 +11,6 @@ const publicacionController = {
           fecha: req.body.fecha,
         });
         await publicacion.save();
-        res.status(201).json(publicacion);
         return publicacion;
       } catch (error:any) {
         res.status(400).json({ error: error.message });
@@ -19,8 +18,11 @@ const publicacionController = {
     },
     visualizaPublicaciones: async (req:Request, res:Response) => {
       try {
-        const publicacion = await publicacionesModel.find();
-        res.json(publicacion);
+        const publicaciones = await publicacionesModel.find();
+        res.status(200).json({
+          success: true,
+          data: publicaciones
+        });
       } catch (error:any) {
         res.status(500).json({ error: error.message });
       }

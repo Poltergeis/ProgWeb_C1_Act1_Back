@@ -1,10 +1,33 @@
-import { Router, Response } from "express";
+import { Router, Response, Request } from "express";
 import { AgendaController } from "../controllers/agendaController";
+import webHookUserModel from "../models/webhookUsersModel";
+import { Users, WebHookRequest } from "../types/webhooksUsers";
+
 
 const agendaController = new AgendaController();
 export const agendaRouter = Router();
 
+const users: Users[] = [];
+
 const peticionesPendientes: Response[] = [];
+
+agendaRouter.post('/webhooks', async function (req: WebHookRequest, res) {
+    try {
+        const { id, url, secretWord } = req.body;
+        const newWebHooks = new webHookUserModel({
+            id, url, secretWord
+        });
+        await newWebHooks.save();
+        res.status(201).json({
+            success: true,
+            message: "nuevo usuario de webhooks",
+            nuevo_usuario: newWebHooks
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(error);
+    }
+});
 
 agendaRouter.get('/ver', async function (req, res) {
     try {
@@ -30,7 +53,18 @@ agendaRouter.post('/guardar', async function (req, res) {
         const nuevaNotificacion = await agendaController.guardarAgenda(req, res);
 
         for (let cliente of peticionesPendientes) {
-            cliente.write(`data: ${nuevaNotificacion}\n\n`);
+            cliente.write(`data: ${JSON.stringify(nuevaNotificacion)}\n\n`);
+        }
+
+        const urls = await webHookUserModel.find();
+        for (let url of urls) {
+            await fetch(url.url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(nuevaNotificacion)
+            });
         }
     } catch (error) {
         console.log(`error en el enrutador. ERROR: ${error}`);
