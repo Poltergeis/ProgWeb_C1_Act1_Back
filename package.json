@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon dist/app.js",
+    "tsdev": "tsnd --watch --respawn --clear app.ts",
     "start": "tsc && cls && node dist/app.js",
     "delDist": "rmdir /S /Q dist"
   },
@@ -32,6 +33,7 @@
     "@types/signale": "^1.4.7",
     "@types/uuid": "^9.0.8",
     "@types/ws": "^8.5.10",
-    "nodemon": "^3.1.0"
+    "nodemon": "^3.1.0",
+    "ts-node-dev": "^2.0.0"
   }
 }
