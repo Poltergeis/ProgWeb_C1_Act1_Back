@@ -9,11 +9,11 @@ const secretKey = crypto.randomBytes(64).toString("hex");
 const usuarioController = {
   agregarUsuario: async (req: Request, res: Response) => {
     try {
-      const contra = req.body.contranena;//const contraEncryp = await bcrypt.hash(req.body.contrasena, 10);
+      const contraEncryp = await bcrypt.hash(req.body.contrasena, 10);
       const usuarios = new usuariosModel({
         nombre: req.body.nombre,
         correo: req.body.correo,
-        contrasena: contra,//contraEncryp,
+        contrasena: contraEncryp,
       });
 
       await usuarios.save();
@@ -55,7 +55,7 @@ const usuarioController = {
           .json({ error: "Usuario o contraseña incorrectos" });
       }
 
-      const isMatch = usuario.contrasena === contrasena;//await bcrypt.compare(contrasena, usuario.contrasena);
+      const isMatch = await bcrypt.compare(contrasena, usuario.contrasena);
 
       if (!isMatch) {
         return res
@@ -63,7 +63,7 @@ const usuarioController = {
           .json({ error: "Usuario o contraseña incorrectos" });
       }
       const token = jwt.sign({ id: usuario.id }, secretKey, {
-        expiresIn: "5m",
+        expiresIn: "1h",
       });
       const datosUsuario = {
         nombre: usuario.nombre,
