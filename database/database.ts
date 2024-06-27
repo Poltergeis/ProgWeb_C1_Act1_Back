@@ -3,13 +3,15 @@ import signale from "signale";
 import dotenv from "dotenv"
 dotenv.config()
 
-const MONGO_HOST = process.env.MONGO_HOST
-const MONGO_PORT = process.env.MONGO_PORT
+const MONGO_USER = process.env.MONGO_USER
+const MONGO_PASSWORD = process.env.MONGO_PASSWORD
 const MONGO_COLLECTION = process.env.MONGO_COLLECTION
+const MONGO_HOST = process.env.MONGO_HOST
+
 
 export default async function connectToDatabase() {
     try {
-        await mongoose.connect(`mongodb://${MONGO_HOST}:${MONGO_PORT}/${MONGO_COLLECTION}`)
+        await mongoose.connect(`mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}${MONGO_HOST}/${MONGO_COLLECTION}?retryWrites=true`)
     } catch (error) {
         signale.info("la conexion a mongo ha fallado antes de ser establecida")
     }
