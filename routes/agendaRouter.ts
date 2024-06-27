@@ -13,9 +13,9 @@ const peticionesPendientes: Response[] = [];
 
 agendaRouter.post('/webhooks', async function (req: WebHookRequest, res) {
     try {
-        const { id, url, secretWord } = req.body;
+        const { url} = req.body;
         const newWebHooks = new webHookUserModel({
-            id, url, secretWord
+            url
         });
         await newWebHooks.save();
         res.status(201).json({
